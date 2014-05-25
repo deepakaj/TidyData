@@ -73,7 +73,7 @@ library(reshape2)
 coreSummary <- melt(meansData, id = c('Subject', 'Activity'))
 
 ## Summarize based on each subject+activity combination
-coreSummary <- dcast(coreSummary, Activity+Subject ~ variable, mean)
+coreSummary <- dcast(coreSummary, Subject+Activity ~ variable, mean)
 
 
 ## Write summary to txt file
