@@ -59,7 +59,7 @@ colNames<-gsub('Acc', 'Acceleration', colNames)
 colNames<-gsub('Gyro', 'Angular Velocity', colNames)
 colNames<-gsub('Mag', 'Magnitude', colNames)
 colNames<-gsub("angle\\(t","angle\\(Time Domain ",colNames)
-colNames<-c("Subject","Activity",gsub("^","Average of ",colNames[-(1:2)]))
+colNames<-c("Activity","Subject",gsub("^","Average of ",colNames[-(1:2)]))
 names(meansData) <- colNames
 
 
@@ -73,7 +73,7 @@ library(reshape2)
 coreSummary <- melt(meansData, id = c('Subject', 'Activity'))
 
 ## Summarize based on each subject+activity combination
-coreSummary <- dcast(coreSummary, Subject+Activity ~ variable, mean)
+coreSummary <- dcast(coreSummary, Activity+Subject ~ variable, mean)
 
 
 ## Write summary to txt file
