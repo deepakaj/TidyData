@@ -1,54 +1,80 @@
-library(reshape2)
-setwd("f:/data/UCI HAR Dataset")
 
-## form train cases
+## Set this to the appropriate directory that contains the test and train data sets 
+wd <- "f:/data/UCI HAR Dataset"
+setwd(wd)
+
+
+## Parse train data
 subject <- read.table("train/subject_train.txt")
-X <- read.table("train/X_train.txt")
+x <- read.table("train/X_train.txt")
+trainSet <- cbind(subject, x)
+
+## Parse the activity data associated
 y <- read.table("train/y_train.txt")
-trainSet <- cbind(subject, X, y)
+trainSet <- cbind(trainSet, y)
 
-## form test cases
+## Clean some memory
+rm(subject, x, y)
+
+
+## Parse test data
 subject <- read.table("test/subject_test.txt")
-X <- read.table("test/X_test.txt")
+x <- read.table("test/X_test.txt")
+testSet <- cbind(subject, x)
+
+
+## Parse the activity data associated
 y <- read.table("test/y_test.txt")
-testSet <- cbind(subject, X, y)
+testSet <- cbind(testSet, y)
 
-## merge test and train cases
+
+
+## Fuse test and train cases (row bind, horizontal)
 data <- rbind(trainSet, testSet)
-#rm(subject, X, y, trainSet, testSet)
 
-## set column names
+
+## Set the appropriate column names (provided)
 features <- read.table("features.txt")
 names(data) <- c('Subject', as.character(features$V2), 'activityNumber')
 
 
-
-## add activity names
+## Merge, Add activity names
 activities <- read.table("activity_labels.txt")
 names(activities) <- c('activityNumber', 'Activity')
 data <- merge(activities, data, all = TRUE)
-data <- data[order(data$activityNumber, data$subject),]
+data <- data[order(data$activityNumber, data$Subject),]
 
 
-## extract mean & standard deviation columns
-meansDevs <- data[colnames(data[grep(".*std.*|.*mean\\(.*|Activity|Subject", colnames(combined))])]
+## Extract mean & standard deviation columns
+meansData <- data[colnames(data[grep(".*std.*|.*mean\\(.*|Activity|Subject", colnames(data))])]
 
 
-## clean up column names
-cols <- names(meansDevs)[-(1:2)]
-cols <- gsub('-|\\(\\)', '', cols)
-cols <- gsub('^t', 'timeDomain', cols)
-cols <- gsub('^f', 'frequencyDomain', cols)
-cols <- gsub('Acc', 'Acceleration', cols)
-cols <- gsub('Gyro', 'Gyration', cols)
-cols <- gsub('Mag', 'Magnitude', cols)
-cols <- gsub('mean', 'Mean', cols)
-cols <- gsub('std', 'StdDev', cols)
-names(meansDevs)[-(1:2)] <- cols
+## Filter out column names, and replace them with more meaningful ones 
+colNames<-names(meansData)
+colNames<-gsub('mean', 'Mean', colNames)
+colNames<-gsub('std', 'StdDev', colNames)
+colNames<-gsub('^t', 'TimeDomain', colNames)
+colNames<-gsub('^f', 'FrequencyDomain', colNames)
+colNames<-gsub('Acc', 'Acceleration', colNames)
+colNames<-gsub('Gyro', 'Angular Velocity', colNames)
+colNames<-gsub('Mag', 'Magnitude', colNames)
+colNames<-gsub("angle\\(t","angle\\(Time Domain ",colNames)
+colNames<-c("Subject","Activity",gsub("^","Average of ",colNames[-(1:2)]))
+names(meansData) <- colNames
 
 
-dataSummary <- melt(meansDevs, id = c('Activity', 'Subject'))
+## Clean up some memory before reshaping
+rm(subject, x, y, trainSet, testSet, data)
 
-dataSummary2 <- dcast(dataSummary, Subject+Activity ~ variable, mean)
 
-write.table(dataSummary, "data_summary.txt")
+## We move onto melting and casting the data, computing mean on each activity+subject value group 
+library(reshape2)
+
+coreSummary <- melt(meansData, id = c('Subject', 'Activity'))
+
+## Summarize based on each subject+activity combination
+coreSummary <- dcast(coreSummary, Subject+Activity ~ variable, mean)
+
+
+## Write summary to txt file
+write.table(coreSummary, "coreSummary.txt")
