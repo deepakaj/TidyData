@@ -8,13 +8,14 @@ run_analysis.R
 Cleans the test and train data sets; creates a neat summary (averages) with around 180 rows (each subject+activity combination)
 
 
-###Requirements
+Requirements
+------------
 * The 'wd' variable needs to be set to the working directory that contains the'UCI HAR Dataset folder 
 * Ensure that the `reshape2` is installed
 * The tidy data set is created from a subset (mean(), std() columns) of the overall data set
 
-The script executes the following steps:
-
+Script Process:
+---------------------------------------
 * Loads and parses the 3 datafiles for each set
 * Read all the features from the features.txt file;
 * Uses regular expression matching to filter only mean and standard deviation features.
