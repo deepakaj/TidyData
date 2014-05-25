@@ -14,7 +14,7 @@ Requirements
 * Ensure that the `reshape2` is installed
 * The tidy data set is created from a subset (mean(), std() columns) of the overall data set
 
-Script Process:
+Script Process
 ---------------------------------------
 * Loads and parses the 3 datafiles for each set
 * Read all the features from the features.txt file;
