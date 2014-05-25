@@ -42,11 +42,11 @@ names(data) <- c('Subject', as.character(features$V2), 'activityNumber')
 activities <- read.table("activity_labels.txt")
 names(activities) <- c('activityNumber', 'Activity')
 data <- merge(activities, data, all = TRUE)
-data <- data[order(data$activityNumber, data$Subject),]
+data <- data[order(data$Subject, data$activityNumber),]
 
 
 ## Extract mean & standard deviation columns
-meansData <- data[colnames(data[grep(".*std.*|.*mean\\(.*|Activity|Subject", colnames(data))])]
+meansData <- data[colnames(data[grep(".*std.*|.*mean\\(.*|Subject|Activity", colnames(data))])]
 
 
 ## Filter out column names, and replace them with more meaningful ones 
